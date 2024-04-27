@@ -1,0 +1,814 @@
+local CoreGui = game:GetService("CoreGui")
+local tbl = {}
+
+for i,v in pairs(CoreGui.GetDescendants(CoreGui)) do
+     if v.IsA(v, "ImageLabel") and v.Image:find('rbxasset://') then
+            table.insert(tbl, v.Image)
+        end
+end
+
+local hello;
+hello = hookfunction(game:GetService("ContentProvider").PreloadAsync, function(self, ...)
+        local Args = {...}
+        if not checkcaller() and type(Args[1]) == "table" and table.find(Args[1], CoreGui) then
+            Args[1] = tbl
+            return hello(self, unpack(Args))
+        end
+    return hello(self, ...)
+end)
+
+local function football(ncm)
+     if ncm == "PreloadAsync" or ncm == "preloadAsync" then
+          return true
+     end
+     return false
+end
+
+local __namecall;
+
+__namecall = hookmetamethod(game, "__namecall", function(Self, ...)
+    local Args = {...}
+    local NamecallMethod = getnamecallmethod()
+    if not checkcaller() and type(Args[1]) == "table" and table.find(Args[1], CoreGui) and Self == game.GetService(game, "ContentProvider") and football(NamecallMethod) then
+        Args[1] = tbl
+        return __namecall(Self, unpack(Args))
+    end
+    return __namecall(Self, ...)
+end)
+
+wait(1)
+    
+    local Rayfield = loadstring(game:HttpGet('https://raw.githubusercontent.com/imaaan00bb/modded-rayfield/main/ez'))()
+    
+    local Window = Rayfield:CreateWindow({
+        Name = "script",
+        LoadingTitle = "test",
+        LoadingSubtitle = "by people",
+        ConfigurationSaving = {
+           Enabled = False,
+           FolderName = WiiHub, -- Create a custom folder for your hub/game
+           FileName = "script"
+        },
+        Discord = {
+           Enabled = false,
+           Invite = "", -- The Discord invite code, do not include discord.gg/. E.g. discord.gg/ABCD would be ABCD.
+           RememberJoins = true -- Set this to false to make them join the discord every time they load it up
+        },
+        KeySystem = false, -- Set this to true to use our key system
+        KeySettings = {
+           Title = "test ff2",
+           Subtitle = "yippee",
+           Note = "",
+           FileName = "",
+           SaveKey = false,
+           GrabKeyFromSite = false, -- If this is true, set Key below to the RAW site you would like Rayfield to get the key from
+           Key = ""
+        }
+     })
+     
+
+     local wiihub = {
+     pv = true,
+     universal = 0,
+     blatant = 0,
+     unitoggle = true,
+     blatoggle = true,
+     block = true,
+     blockslider = 1.5,
+     AutoFollowQb = true,
+     tprange = 0,
+    }
+
+    local Tab = Window:CreateTab("Catching", 4483362458) -- Title, Image
+    
+    local Section = Tab:CreateSection("Universal")
+    
+    local Toggle = Tab:CreateToggle({
+       Name = "Universal MS",
+       CurrentValue = false,
+       Flag = "Toggleaaaasfbf1", -- A flag is the identifier for the configuration file, make sure every element has a different flag if you're using configuration saving to ensure no overlaps
+       Callback = function(Value)
+           unitoggle = Value
+           if unitoggle == true then
+               task.wait()
+            local UserInputService = game:GetService("UserInputService")
+    local player = game.Players.LocalPlayer
+    
+    local catchRight
+    repeat
+        catchRight = player.Character and player.Character:FindFirstChild("CatchRight")
+        wait()
+    until catchRight
+    
+    local maxDistance = 50^2
+    
+    UserInputService.InputBegan:Connect(function(input, gameProcessedEvent)
+        if input.UserInputType == Enum.UserInputType.MouseButton1 then
+            local closestDist = maxDistance
+            local closestFootball = nil
+            local playerPos = catchRight.Position
+            for i, v in pairs(game.workspace:GetChildren()) do
+                if v.Name == "Football" and v:IsA("BasePart") then
+                    local dist = (v.Position - playerPos).Magnitude
+                    if dist < closestDist and dist <= universal then
+                        closestDist = dist
+                        closestFootball = v
+                        local steps = 30
+                        for i = 1, steps do
+                        firetouchinterest(game.Players.LocalPlayer.Character["CatchRight"], v, 0)
+                        firetouchinterest(game.Players.LocalPlayer.Character["CatchRight"], v, 0)
+                        task.wait()
+                        firetouchinterest(game.Players.LocalPlayer.Character["CatchRight"], v, 1)
+                        firetouchinterest(game.Players.LocalPlayer.Character["CatchRight"], v, 1)
+                    end
+                end
+            end
+        end
+    end
+    end)
+    else
+               if unitoggle == false then
+                   universal = 0
+    end
+    end
+    end
+     })
+     
+     local Slider = Tab:CreateSlider({
+       Name = "Universal Range",
+       Range = {0, 30},
+       Increment = 0.1,
+       Suffix = "Range",
+       CurrentValue = 0,
+       Flag = "Slider1", -- A flag is the identifier for the configuration file, make sure every element has a different flag if you're using configuration saving to ensure no overlaps
+       Callback = function(Value)
+           if unitoggle == true then
+                   universal = Value
+           else
+               if unitoggle == false then
+                   universal = 0
+            end
+        end
+    end
+    })
+
+local part
+
+-- function to create the part
+local function createPart(size)
+    if part then
+        part:Destroy()
+    end
+    part = Instance.new("Part")
+    part.Anchored = true
+    part.CanCollide = false
+    part.Size = Vector3.new(size, size, size)
+    part.Transparency = 0.4
+end
+
+-- function to attach the part to a football
+local function attachToFootball(football)
+    if football:IsA("BasePart") and part then
+        part.Parent = football
+        part.CFrame = football.CFrame
+    end
+end
+
+-- function to update the part's position as the football moves
+local function updatePart()
+    if part and part.Parent then
+        part.CFrame = part.Parent.CFrame
+        local football = part.Parent
+        if football and football.Velocity.Magnitude > 0 then
+            -- Disable rotation while in the air
+            part.Rotation = Vector3.new(0, 0, 0)
+        else
+            part.Rotation = football.Rotation
+        end
+    end
+end
+
+-- create the toggle
+local Toggle = Tab:CreateToggle({
+   Name = "Universal Mag Hitbox",
+   CurrentValue = false,
+   Flag = "Toggle1",
+   Callback = function(Value)
+       if Value then
+           createPart(universal)
+           for i, v in pairs(game.workspace:GetChildren()) do
+               if v.Name == "Football" then
+                   attachToFootball(v)
+               end
+           end
+           game.workspace.ChildAdded:Connect(function(child)
+               if child.Name == "Football" then
+                   attachToFootball(child)
+               end
+           end)
+           game:GetService("RunService").Heartbeat:Connect(updatePart)
+       else
+           if part then
+               part:Destroy()
+               part = nil
+           end
+       end
+   end,
+})
+
+-- connect to the universal variable change event
+local function onUniversalChanged(newValue)
+    createPart(newValue)
+end
+
+universalChangedConnection = game:GetService("RunService").Heartbeat:Connect(function()
+    if universal ~= lastUniversal then
+        lastUniversal = universal
+        onUniversalChanged(lastUniversal)
+    end
+end)
+    
+    local Section = Tab:CreateSection("Blatant")
+    
+    local Toggle = Tab:CreateToggle({
+       Name = "Regular",
+       CurrentValue = false,
+       Flag = "Togglebalgnt", -- A flag is the identifier for the configuration file, make sure every element has a different flag if you're using configuration saving to ensure no overlaps
+       Callback = function(Value)
+           blatoggle = Value
+           if blatoggle == true then
+               task.wait()
+            local UserInputService = game:GetService("UserInputService")
+    local player = game.Players.LocalPlayer
+    
+    local catchRight
+    repeat
+        catchRight = player.Character and player.Character:FindFirstChild("CatchRight")
+        wait()
+    until catchRight
+    
+    local maxDistance = 50^2
+    
+    UserInputService.InputBegan:Connect(function(input, gameProcessedEvent)
+        if input.UserInputType == Enum.UserInputType.MouseButton1 then
+            local closestDist = maxDistance
+            local closestFootball = nil
+            local playerPos = catchRight.Position
+            for i, v in pairs(game.workspace:GetChildren()) do
+                if v.Name == "Football" and v:IsA("BasePart") then
+                    local dist = (v.Position - playerPos).Magnitude
+                    if dist < closestDist and dist <= blatant then
+                        closestDist = dist
+                        closestFootball = v
+                    end
+                end
+            end
+            if closestFootball then
+                local steps = 30
+                for i = 1, steps do
+                    closestFootball.CFrame = CFrame.new(catchRight.Position + Vector3.new(1, 1, 1))
+                    wait()
+                end
+            end
+        end
+    end)
+    else
+               if blatoggle == false then
+                   blatant = 0
+           end
+        end
+    end
+     })
+    
+     local Slider = Tab:CreateSlider({
+       Name = "Regular Range",
+       Range = {0, 60},
+       Increment = 0.1,
+       Suffix = "Range",
+       CurrentValue = 0,
+       Flag = "Slider1", -- A flag is the identifier for the configuration file, make sure every element has a different flag if you're using configuration saving to ensure no overlaps
+       Callback = function(Value)
+           if blatoggle == true then
+           blatant = Value
+           else
+               if blatoggle == false then
+                   blatant = 0
+            end
+        end
+    end
+    })
+
+    local Tab = Window:CreateTab("Physics") -- Title, Image
+
+    local Section = Tab:CreateSection("Grapher")
+    
+local parts = {} -- Define parts table as a global variable
+
+local Toggle = Tab:CreateToggle({
+    Name = "Grapher",
+    CurrentValue = false,
+    Flag = "Toggle1",
+    Callback = function(Value)
+        for _, Part in ipairs(parts) do
+            Part.Transparency = Value and 0.6 or 1
+        end
+    end,
+})
+
+local grav = 28
+
+local function BallPosAtTime(initial_position, initial_velocity, grav, t)
+    local predicted_position = initial_position + initial_velocity * t + 0.5 * Vector3.new(0, -grav, 0) * t ^ 2
+    return predicted_position
+end
+
+local function createParts(x0, v0, airtime, visible)
+    local parts = {}
+    local transparency = visible and 0.6 or 1
+    for t = 0, airtime, 0.05 do
+        local POS = BallPosAtTime(x0, v0, grav, t)
+        local Part = Instance.new("Part")
+        Part.Parent = workspace
+        Part.Size = Vector3.new(3, 2, 3)
+        Part.Anchored = true
+        Part.Color = Color3.fromRGB(255, 255, 255)
+        Part.CanCollide = false
+        Part.Position = POS
+        Part.Transparency = transparency
+        table.insert(parts, Part)
+    end
+    return parts
+end
+
+workspace.ChildAdded:Connect(function(c)
+    game:GetService("RunService").Stepped:Wait()
+    if c.Name ~= "Football" or c:IsA("Tool") then return end
+
+    local x0 = c.Position
+    local v0 = c.Velocity
+
+    local airtime = (-v0.Y - math.sqrt(v0.Y ^ 2 - 4 * 0.5 * -grav * x0.Y)) / (2 * 0.5 * -grav)
+
+    parts = createParts(x0, v0, airtime, Toggle.CurrentValue)
+
+    task.wait(airtime + 1.75);
+
+    for _, Part in ipairs(parts) do
+        Part:Destroy()
+    end
+end)
+
+Toggle.Callback(Toggle.CurrentValue) -- initialize the toggle state on startup
+
+-- Glow
+
+local outlineEnabled = false
+local outlineTransparency = 0.3
+local outlineSize = 1.1
+local outlineColor = Color3.fromRGB(255, 0, 0)
+local outlineGlow = true
+
+local function createOutline(part)
+    local outline = Instance.new("SelectionBox")
+    outline.Adornee = part
+    outline.LineThickness = 0.05
+    outline.Color3 = outlineColor
+    outline.Transparency = outlineTransparency
+    outline.SurfaceTransparency = outlineTransparency
+    outline.SurfaceColor3 = outlineColor
+    outline.Parent = part
+    if outlineGlow then
+        local glow = Instance.new("PointLight")
+        glow.Color = outlineColor
+        glow.Range = 10
+        glow.Brightness = 5
+        glow.Shadows = true
+        glow.Parent = outline
+    end
+end
+
+local Toggle = Tab:CreateToggle({
+    Name = "Football Glow",
+    CurrentValue = false,
+    Flag = "Toggle1",
+    Callback = function(Value)
+        outlineEnabled = Value
+        for _, part in ipairs(workspace:GetChildren()) do
+            if part.Name == "Football" and part:IsA("BasePart") then
+                local outline = part:FindFirstChild("Outline")
+                if Value then
+                    if not outline then
+                        createOutline(part)
+                    else
+                        outline.Transparency = outlineTransparency
+                        outline.SurfaceTransparency = outlineTransparency
+                        outline.Color3 = outlineColor
+                        outline.SurfaceColor3 = outlineColor
+                    end
+                else
+                    if outline then
+                        outline:Destroy()
+                    end
+                end
+            end
+        end
+    end,
+})
+
+Toggle.Callback(Toggle.CurrentValue)
+
+workspace.ChildAdded:Connect(function(child)
+    if child.Name == "Football" and child:IsA("BasePart") then
+        if outlineEnabled then
+            createOutline(child)
+        end
+    end
+end)
+
+
+local Button = Tab:CreateButton({
+    Name = "Delete Parts (incase grapher doesnt go away)",
+    Callback = function()
+        for i, v in pairs(game.workspace:GetChildren()) do
+            if v.Name == "Part" and v:IsA("BasePart") then
+                v:Destroy()
+            end
+        end        
+    end
+ })
+
+    local Section = Tab:CreateSection("Reach")
+    
+    local range = blockslider
+    local defaultSize = Vector3.new(0.75, 5, 1.5)
+    
+    local function setBlockSize()
+        if game.Players.LocalPlayer.Character and game.Players.LocalPlayer.Character:FindFirstChild("BlockPart") then
+            game.Players.LocalPlayer.Character.BlockPart.Size = Vector3.new(range, 5, range)
+        end
+    end
+    
+    local Toggle = Tab:CreateToggle({
+        Name = "Block Reach | Hit x before using",
+        CurrentValue = false,
+        Flag = "Toggleraeachvlox1",
+        Callback = function(Value)
+            block = Value
+            if block == true then
+                setBlockSize()
+            else
+                game.Players.LocalPlayer.Character.BlockPart.Size = defaultSize
+                blockslider = 1.5
+            end
+        end
+    })
+    
+    local Slider = Tab:CreateSlider({
+        Name = "Block Reach Distance",
+        Range = {1.5, 20},
+        Increment = 0.1,
+        Suffix = "Range",
+        CurrentValue = 1.5,
+        Flag = "Slidersliderblock1",
+        Callback = function(Value)
+            blockslider = Value
+            range = blockslider
+            if block == true then
+                setBlockSize()
+            end
+        end
+    })
+    
+    local Slider = Tab:CreateSlider({
+        Name = "Block Reach Visibility",
+        Range = {0, 1},
+        Increment = 0.1,
+        Suffix = "Transparency",
+        CurrentValue = 1,
+        Flag = "Slidersliderblock1",
+        Callback = function(Value)
+            if game.Players.LocalPlayer.Character and game.Players.LocalPlayer.Character:FindFirstChild("BlockPart") then
+            game.Players.LocalPlayer.Character.BlockPart.Transparency = Value
+            end
+        end
+    })
+
+local Section = Tab:CreateSection("Click Tackle")
+
+    local connection -- Declare a variable to store the connection object
+    
+    local Toggle = Tab:CreateToggle({
+        Name = "Click Tackle TP",
+        CurrentValue = false,
+        Flag = "Toggle13",
+        Callback = function(Value)
+            if Value then
+                connection = game.Players.LocalPlayer:GetMouse().Button1Down:Connect(function()
+                    for i, v in pairs(game.workspace:GetDescendants()) do
+                        if v.Name == "Football" and v:IsA("Tool") then
+                            local toolPosition = v.Parent.HumanoidRootPart.Position
+                            local playerPosition = game.Players.LocalPlayer.Character.HumanoidRootPart.Position
+                            if (toolPosition - playerPosition).Magnitude <= tprange then
+                                game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame = v.Parent.HumanoidRootPart.CFrame + Vector3.new(1, 1, 1)
+                            end
+                        end
+                    end
+                end)
+            else
+                if connection then
+                    connection:Disconnect() -- Disconnect the mouse click event only if it exists
+                end
+            end
+        end
+        
+    })local Slider = Tab:CreateSlider({
+   Name = "Click Tackle TP range",
+   Range = {0, 15},
+   Increment = .1,
+   Suffix = "Value",
+   CurrentValue = 0,
+   Flag = "Sliderrangeff21", -- A flag is the identifier for the configuration file, make sure every element has a different flag if you're using configuration saving to ensure no overlaps
+   Callback = function(Value)
+       tprange = Value
+   end,
+})
+    
+local Section = Tab:CreateSection("BigHead")
+    
+local SliderX = Tab:CreateSlider({
+   Name = "BigHead Size X",
+   Range = {1, 10},
+   Increment = .1,
+   Suffix = "Size",
+   CurrentValue = 7,
+   Flag = "SliXsizeder1", 
+   Callback = function(Value)
+      for _, player in ipairs(game:GetService("Players"):GetPlayers()) do
+         local head = player.Character:FindFirstChild("Head")
+         if head then
+            head.Size = Vector3.new(Value, head.Size.Y, head.Size.Z)
+         end
+      end
+   end,
+})
+
+local SliderY = Tab:CreateSlider({
+   Name = "BigHead Size Y",
+   Range = {1, 10},
+   Increment = .1,
+   Suffix = "Size",
+   CurrentValue = 2,
+   Flag = "SliYsizeder1", 
+   Callback = function(Value)
+      for _, player in ipairs(game:GetService("Players"):GetPlayers()) do
+         local head = player.Character:FindFirstChild("Head")
+         if head then
+            head.Size = Vector3.new(head.Size.X, Value, head.Size.Z)
+         end
+      end
+   end,
+})
+
+local SliderZ = Tab:CreateSlider({
+   Name = "BigHead Size Z",
+   Range = {1, 10},
+   Increment = .1,
+   Suffix = "Size",
+   CurrentValue = 3,
+   Flag = "SliZsizeder1", 
+   Callback = function(Value)
+      for _, player in ipairs(game:GetService("Players"):GetPlayers()) do
+         local head = player.Character:FindFirstChild("Head")
+         if head then
+            head.Size = Vector3.new(head.Size.X, head.Size.Y, Value)
+         end
+      end
+   end,
+})
+
+local Toggle = Tab:CreateToggle({
+   Name = "BigHead Players",
+   CurrentValue = false,
+   Flag = "Togglhead",
+   Callback = function(Value)
+      if Value then
+         for _, player in ipairs(game:GetService("Players"):GetPlayers()) do
+            local head = player.Character:FindFirstChild("Head")
+            if head then
+               head.Size = Vector3.new(SliderX.CurrentValue, SliderY.CurrentValue, SliderZ.CurrentValue)
+            end
+         end
+      else
+         for _, player in ipairs(game:GetService("Players"):GetPlayers()) do
+            local head = player.Character:FindFirstChild("Head")
+            if head then
+               head.Size = Vector3.new(2, 1, 1)
+            end
+         end
+      end
+   end,
+})
+
+local Section = Tab:CreateSection("")
+ 
+ local Toggle = Tab:CreateToggle({
+   Name = "Auto Follow Ball Carrier",
+   CurrentValue = false,
+   Flag = "Toggle1", 
+   Callback = function(Value)
+       AutoFollowQb = Value -- Set AutoFollowQb to the value of the toggle
+       if Value then -- If toggle is on, start following the carrier
+           for i, v in pairs(game.Players:GetPlayers()) do
+               local ball = v.Character:FindFirstChild("Football")
+               if ball then
+                   local des = ball:FindFirstChild("Handle")
+                   local humanoid = game.Players.LocalPlayer.Character.Humanoid
+                   local carrier = game:GetService("ReplicatedStorage").Values.Carrier.Value
+                   local chc = carrier.Character
+                   if carrier.Team ~= game.Players.LocalPlayer.Team then
+                       while AutoFollowQb do
+                           wait()
+                           humanoid:MoveTo(chc.Torso.Position)
+                       end
+                   end
+               end
+           end
+       else -- If toggle is off, stop following the carrier
+           AutoFollowQb = false
+       end
+   end,
+})
+    
+    local track = nil
+    
+     local Toggle = Tab:CreateToggle({
+        Name = "Underground",
+        CurrentValue = false,
+        Flag = "Toggasfsle1", -- A flag is the identifier for the configuration file, make sure every element has a different flag if you're using configuration saving to ensure no overlaps
+        Callback = function(Value)
+            if Value then
+                local Anim = Instance.new("Animation")
+                Anim.AnimationId = "rbxassetid://182724289"
+                track = game.Players.LocalPlayer.Character.Humanoid:LoadAnimation(Anim)
+                track:Play(.1, 1, 1)
+            local part = Instance.new("Part")
+            part.Size = Vector3.new(500, 0.001, 500)
+            part.CFrame = CFrame.new(Vector3.new(10.3562937, -1.51527438, 30.4708614))
+            part.Anchored = true
+            part.Parent = game.Workspace
+            
+            local model = game:GetService("Workspace").Models.Field.Grass
+            for _, part in pairs(model:GetDescendants()) do
+            if part:IsA("BasePart") then
+            part.CanCollide = false
+            part.Transparency = .5
+            end
+            end
+            else 
+                track:Stop()
+                local model = game:GetService("Workspace").Models.Field.Grass
+                for _, part in pairs(model:GetDescendants()) do
+            if part:IsA("BasePart") then
+                part.Transparency = 0
+                part.CanCollide = true
+            end
+                end
+            end
+    end
+    
+     })
+
+     local Tab = Window:CreateTab("Automatics") -- Title, Image
+
+     local Section = Tab:CreateSection("Captain")
+
+     local Button = Tab:CreateButton({
+        Name = "Finish Captain Race",
+        Callback = function()
+            game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame = game:GetService("Workspace").Models.LockerRoomA.FinishLine.CFrame + Vector3.new(0, 2, 0)
+        end
+     })
+     
+    local Tab = Window:CreateTab("Animations") -- Title, Image
+    
+    local Button = Tab:CreateButton({
+        Name = "Kick",
+        Callback = function()
+            local track = nil
+            local Anim = Instance.new("Animation")
+                Anim.AnimationId = "rbxassetid://3695538622"
+                track = game.Players.LocalPlayer.Character.Humanoid:LoadAnimation(Anim)
+                track:Play(.1, 1, 1)
+        end,
+     })
+    
+     local Button = Tab:CreateButton({
+        Name = "Dab",
+        Callback = function()
+            local track = nil
+            local Anim = Instance.new("Animation")
+                Anim.AnimationId = "rbxassetid://3695549792"
+                track = game.Players.LocalPlayer.Character.Humanoid:LoadAnimation(Anim)
+                track:Play(.1, 1, 1)
+        end,
+     })
+    
+     local Button = Tab:CreateButton({
+        Name = "knee",
+        Callback = function()
+            local track = nil
+            local Anim = Instance.new("Animation")
+                Anim.AnimationId = "rbxassetid://3695535660"
+                track = game.Players.LocalPlayer.Character.Humanoid:LoadAnimation(Anim)
+                track:Play(.1, 1, 1)
+        end,
+     })
+    
+     local Button = Tab:CreateButton({
+        Name = "Made Field Goal",
+        Callback = function()
+            local track = nil
+            local Anim = Instance.new("Animation")
+                Anim.AnimationId = "rbxassetid://3695541300"
+                track = game.Players.LocalPlayer.Character.Humanoid:LoadAnimation(Anim)
+                track:Play(.1, 1, 1)
+        end,
+     })
+    
+     local Button = Tab:CreateButton({
+        Name = "Missed Field Goal",
+        Callback = function()
+            local track = nil
+            local Anim = Instance.new("Animation")
+                Anim.AnimationId = "rbxassetid://3695542947"
+                track = game.Players.LocalPlayer.Character.Humanoid:LoadAnimation(Anim)
+                track:Play(.1, 1, 1)
+        end,
+     })
+    
+     local Button = Tab:CreateButton({
+        Name = "Truck",
+        Callback = function()
+            local track = nil
+            local Anim = Instance.new("Animation")
+                Anim.AnimationId = "rbxassetid://10127202314"
+                track = game.Players.LocalPlayer.Character.Humanoid:LoadAnimation(Anim)
+                track:Play(.1, 1, 1)
+        end,
+     })
+    
+     local Button = Tab:CreateButton({
+        Name = "HitStick",
+        Callback = function()
+            local track = nil
+            local Anim = Instance.new("Animation")
+                Anim.AnimationId = "rbxassetid://3695544849"
+                track = game.Players.LocalPlayer.Character.Humanoid:LoadAnimation(Anim)
+                track:Play(.1, 1, 1)
+        end,
+     })
+    
+     local Button = Tab:CreateButton({
+        Name = "Fair Catch",
+        Callback = function()
+            local track = nil
+            local Anim = Instance.new("Animation")
+                Anim.AnimationId = "rbxassetid://3695548117"
+                track = game.Players.LocalPlayer.Character.Humanoid:LoadAnimation(Anim)
+                track:Play(.1, 1, 1)
+        end,
+     })
+    
+     local Button = Tab:CreateButton({
+        Name = "Block",
+        Callback = function()
+            local track = nil
+            local Anim = Instance.new("Animation")
+                Anim.AnimationId = "rbxassetid://3695551500"
+                track = game.Players.LocalPlayer.Character.Humanoid:LoadAnimation(Anim)
+                track:Play(.1, 1, 1)
+        end,
+     })
+    
+    local Tab = Window:CreateTab("Misc") -- Title, Image
+    
+    local Section = Tab:CreateSection("")
+    
+    local Button = Tab:CreateButton({
+        Name = "Remove Uniform",
+        Callback = function()
+            for i, v in pairs(game.workspace:GetDescendants()) do
+                if v:IsA("Model") and v.Parent.Name == game.Players.LocalPlayer.Name and v.Name == "Uniform" then
+                v:Destroy()
+                end
+            end
+        end
+     })
+
+     local Button = Tab:CreateButton({
+        Name = "Destory UI",
+        Callback = function()
+            Rayfield:Destroy()
+        end
+     })
+    
