@@ -247,7 +247,7 @@ end)
         wait()
     until catchRight
     
-    local maxDistance = 50^2
+    local maxDistance = 80^2
     
     UserInputService.InputBegan:Connect(function(input, gameProcessedEvent)
         if input.UserInputType == Enum.UserInputType.MouseButton1 then
@@ -264,7 +264,7 @@ end)
                 end
             end
             if closestFootball then
-                local steps = 30
+                local steps = 80
                 for i = 1, steps do
                     closestFootball.CFrame = CFrame.new(catchRight.Position + Vector3.new(1, 1, 1))
                     wait()
@@ -282,7 +282,7 @@ end)
     
      local Slider = Tab:CreateSlider({
        Name = "Regular Range",
-       Range = {0, 60},
+       Range = {0, 80},
        Increment = 0.1,
        Suffix = "Range",
        CurrentValue = 0,
