@@ -1,40 +1,83 @@
-local CoreGui = game:GetService("CoreGui")
-local tbl = {}
+--> Made By NG!
 
-for i,v in pairs(CoreGui.GetDescendants(CoreGui)) do
-     if v.IsA(v, "ImageLabel") and v.Image:find('rbxasset://') then
-            table.insert(tbl, v.Image)
-        end
-end
+local ShuffleFunction = nil
+local HandshakeArguments = nil
+local AC_STRING = nil
 
-local hello;
-hello = hookfunction(game:GetService("ContentProvider").PreloadAsync, function(self, ...)
-        local Args = {...}
-        if not checkcaller() and type(Args[1]) == "table" and table.find(Args[1], CoreGui) then
-            Args[1] = tbl
-            return hello(self, unpack(Args))
-        end
-    return hello(self, ...)
-end)
-
-local function football(ncm)
-     if ncm == "PreloadAsync" or ncm == "preloadAsync" then
-          return true
-     end
-     return false
-end
-
-local __namecall;
-
-__namecall = hookmetamethod(game, "__namecall", function(Self, ...)
-    local Args = {...}
-    local NamecallMethod = getnamecallmethod()
-    if not checkcaller() and type(Args[1]) == "table" and table.find(Args[1], CoreGui) and Self == game.GetService(game, "ContentProvider") and football(NamecallMethod) then
-        Args[1] = tbl
-        return __namecall(Self, unpack(Args))
+local OldDebug
+OldDebug = hookfunction(getrenv().debug.info, function(Level, Stuff)
+    if Level == 2 and Stuff == "s" then
+        warn("Returning.")
+        return "LocalScript"
     end
-    return __namecall(Self, ...)
+
+    return OldDebug(Level, Stuff)
 end)
+
+local OldBlock
+OldBlock = hookmetamethod(game, '__namecall', function(Self, ...)
+    local Method = getnamecallmethod()
+    local Arguments = {...}
+
+    if Method == "fireServer" and Arguments[1] and Arguments[2] == "error" then
+        return
+    end
+
+    if Method == "fireServer" and string.find(Arguments[1], "AC") then
+        AC_STRING = Arguments[1]
+    end
+
+    return OldBlock(Self, ...)
+end)
+
+task.wait()
+
+for i, v in pairs(getgc()) do
+    if type(v) == "function" and getinfo(v).source:find("PlayerModule.LocalScript") then
+        if getinfo(v).numparams == 7 then
+            ShuffleFunction = v
+            break
+        end
+    end
+end
+
+if ShuffleFunction then
+    local OldShuffle
+    OldShuffle = hookfunction(ShuffleFunction, function(...)
+        local Args = {...}
+
+        local AllowedSets = (Args[2] == 655 and Args[3] == 775 and Args[4] == 724 and Args[5] == 633 and Args[6] == 891) or (Args[2] == 760 and Args[3] == 760 and Args[4] == 771 and Args[5] == 665 and Args[6] == 898) or (Args[2] == 660 and Args[3] == 759 and Args[4] == 751 and Args[5] == 863 and Args[6] == 771)
+
+        if not AllowedSets then
+            return warn(table.unpack(Args))
+        else
+            HandshakeArguments = unpack(Args)
+            return OldShuffle(unpack(Args))
+        end
+
+        return OldShuffle(...)
+    end)
+end
+
+for Index, Value in pairs(getgc()) do
+    if type(Value) == 'function' and getinfo(Value).source:find("PlayerModule.LocalScript") then
+        for Index2, Value2 in getconstants(Value) do
+            if Value2 == 4000001 then
+                setconstant(Value, Index2, 1)
+            end
+    
+            if Value2 == 20.03 then
+                setconstant(Value, Index2, 100)
+            end
+    
+            if Value2 == 50.03 then
+                setconstant(Value, Index2, 100)
+            end
+        end
+    end
+end
+
+warn("Cooks BY NG!")
 
 wait(1)
     
@@ -264,7 +307,7 @@ end)
                 end
             end
             if closestFootball then
-                local steps = 80
+                local steps = 50
                 for i = 1, steps do
                     closestFootball.CFrame = CFrame.new(catchRight.Position + Vector3.new(1, 1, 1))
                     wait()
@@ -274,7 +317,7 @@ end)
     end)
     else
                if blatoggle == false then
-                   blatant = 0
+                   blatant = 20
            end
         end
     end
